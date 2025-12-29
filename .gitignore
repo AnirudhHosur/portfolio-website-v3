@@ -1,30 +1,18 @@
 # Environment variables
 .env
+backend/.env
+frontend/.env.local
 
-# Python
+# Python-generated files
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+*.py[oc]
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+*.egg-info
 
 # Virtual environments
+.venv
 .venv/
 venv/
 env/
@@ -62,6 +50,3 @@ coverage.xml
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
-# uv lock file (already in repo, but adding for completeness)
-uv.lock
