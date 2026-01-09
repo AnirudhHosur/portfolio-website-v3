@@ -10,7 +10,7 @@ import requests
 
 load_dotenv()
 
-st.set_page_config(page_title="RAG Ingest PDF", page_icon="📄", layout="centered")
+st.set_page_config(page_title="Chat with PDF - Anirudh Hosur", page_icon="❤️", layout="centered")
 
 
 @st.cache_resource
