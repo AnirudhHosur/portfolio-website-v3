@@ -56,10 +56,10 @@ export function Navbar() {
             
             {/* Chat with Me button with heart emoji */}
             <Button variant="default" asChild className="gap-2">
-              <a href="https://anirudhhosur.streamlit.app/" target="_blank" rel="noopener noreferrer">
+              <Link href="/chat">
                 <Heart className="h-4 w-4 fill-current" />
                 Chat with Me
-              </a>
+              </Link>
             </Button>
             
             {/* User profile placeholder */}

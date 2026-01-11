@@ -7,6 +7,7 @@ import { ExperienceSection } from "@/components/experience";
 import { SkillsSection } from "@/components/skills";
 import { ProjectsSection } from "@/components/projects";
 import { ContactSection } from "@/components/contact";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
         <ProjectsSection />
         <ContactSection />
       </main>
+      <ScrollToTop />
     </div>
   );
 }

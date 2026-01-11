@@ -3,10 +3,9 @@ from pathlib import Path
 import time
 
 import streamlit as st
-import inngest
+import requests
 from dotenv import load_dotenv
 import os
-import requests
 
 load_dotenv()
 
@@ -14,8 +13,9 @@ st.set_page_config(page_title="Chat with PDF - Anirudh Hosur", page_icon="❤️
 
 
 @st.cache_resource
-def get_inngest_client() -> inngest.Inngest:
-    return inngest.Inngest(app_id="rag_app", is_production=False)
+def get_api_base() -> str:
+    # Production API endpoint - update this to your deployed FastAPI service
+    return os.getenv("FASTAPI_URL", "http://localhost:8000")
 
 
 def save_uploaded_pdf(file) -> Path:
@@ -27,80 +27,52 @@ def save_uploaded_pdf(file) -> Path:
     return file_path
 
 
-async def send_rag_ingest_event(pdf_path: Path) -> None:
-    client = get_inngest_client()
-    await client.send(
-        inngest.Event(
-            name="rag/ingest_pdf",
-            data={
-                "pdf_path": str(pdf_path.resolve()),
-                "source_id": pdf_path.name,
-            },
-        )
-    )
+def send_rag_ingest_event(pdf_path: Path) -> dict:
+    api_base = get_api_base()
+    url = f"{api_base}/ingest"
+    
+    # Read the PDF file
+    with open(pdf_path, 'rb') as f:
+        files = {'file': (pdf_path.name, f, 'application/pdf')}
+        data = {'source_id': pdf_path.name}
+        response = requests.post(url, files=files, data=data)
+        response.raise_for_status()
+        return response.json()
 
 
 st.title("Upload a PDF to Ingest")
 uploaded = st.file_uploader("Choose a PDF", type=["pdf"], accept_multiple_files=False)
 
 if uploaded is not None:
-    with st.spinner("Uploading and triggering ingestion..."):
+    with st.spinner("Uploading and processing PDF..."):
         path = save_uploaded_pdf(uploaded)
-        # Kick off the event and block until the send completes
-        asyncio.run(send_rag_ingest_event(path))
-        # Small pause for user feedback continuity
-        time.sleep(0.3)
-    st.success(f"Triggered ingestion for: {path.name}")
+        try:
+            result = send_rag_ingest_event(path)
+            st.success(f"Successfully ingested: {path.name}")
+            st.json(result)
+        except Exception as e:
+            st.error(f"Error ingesting PDF: {str(e)}")
     st.caption("You can upload another PDF if you like.")
 
 st.divider()
 st.title("Ask a question about your PDFs")
 
 
-async def send_rag_query_event(question: str, top_k: int) -> None:
-    client = get_inngest_client()
-    result = await client.send(
-        inngest.Event(
-            name="rag/query_pdf_ai",
-            data={
-                "question": question,
-                "top_k": top_k,
-            },
-        )
-    )
-
-    return result[0]
-
-
-def _inngest_api_base() -> str:
-    # Local dev server default; configurable via env
-    return os.getenv("INNGEST_API_BASE", "http://127.0.0.1:8288/v1")
+def send_rag_query_event(question: str, top_k: int) -> dict:
+    api_base = get_api_base()
+    url = f"{api_base}/query"
+    
+    payload = {
+        "question": question,
+        "top_k": top_k
+    }
+    
+    response = requests.post(url, json=payload)
+    response.raise_for_status()
+    return response.json()
 
 
-def fetch_runs(event_id: str) -> list[dict]:
-    url = f"{_inngest_api_base()}/events/{event_id}/runs"
-    resp = requests.get(url)
-    resp.raise_for_status()
-    data = resp.json()
-    return data.get("data", [])
-
-
-def wait_for_run_output(event_id: str, timeout_s: float = 120.0, poll_interval_s: float = 0.5) -> dict:
-    start = time.time()
-    last_status = None
-    while True:
-        runs = fetch_runs(event_id)
-        if runs:
-            run = runs[0]
-            status = run.get("status")
-            last_status = status or last_status
-            if status in ("Completed", "Succeeded", "Success", "Finished"):
-                return run.get("output") or {}
-            if status in ("Failed", "Cancelled"):
-                raise RuntimeError(f"Function run {status}")
-        if time.time() - start > timeout_s:
-            raise TimeoutError(f"Timed out waiting for run output (last status: {last_status})")
-        time.sleep(poll_interval_s)
+# Removed Inngest-specific functions since we're using direct API calls now
 
 
 with st.form("rag_query_form"):
@@ -109,17 +81,21 @@ with st.form("rag_query_form"):
     submitted = st.form_submit_button("Ask")
 
     if submitted and question.strip():
-        with st.spinner("Sending event and generating answer..."):
-            # Fire-and-forget event to Inngest for observability/workflow
-            event_id = asyncio.run(send_rag_query_event(question.strip(), int(top_k)))
-            # Poll the local Inngest API for the run's output
-            output = wait_for_run_output(event_id)
-            answer = output.get("answer", "")
-            sources = output.get("sources", [])
-
-        st.subheader("Answer")
-        st.write(answer or "(No answer)")
-        if sources:
-            st.caption("Sources")
-            for s in sources:
-                st.write(f"- {s}")
+        with st.spinner("Generating answer..."):
+            try:
+                result = send_rag_query_event(question.strip(), int(top_k))
+                answer = result.get("answer", "")
+                sources = result.get("sources", [])
+                num_contexts = result.get("num_contexts", 0)
+                
+                st.subheader("Answer")
+                st.write(answer or "(No answer generated)")
+                
+                if sources:
+                    st.caption(f"Sources ({num_contexts} chunks used)")
+                    for s in sources:
+                        st.write(f"- {s}")
+                        
+            except Exception as e:
+                st.error(f"Error querying documents: {str(e)}")
+                st.info("Make sure your FastAPI backend is running and accessible.")
