@@ -1,28 +1,19 @@
-# Minimal production requirements for Vercel deployment
-# Connects to external Qdrant database - no local ML dependencies
-
 # Core web framework
 fastapi>=0.124.4
 pydantic>=2.10.3
 
-# HTTP client for API calls
-requests>=2.31.0
-
-# Environment variable management
-python-dotenv>=1.2.1
-
-# Qdrant client (connects to external Qdrant service)
+# Vector database
 qdrant-client>=1.16.2
 
-# Google AI integration
+# AI/LLM integration
 google-generativeai>=0.8.0
 
-# Essential utilities only
-# Removed heavy packages:
-# - sentence-transformers (800MB+) - not needed for API-only deployment
-# - llama-index-* (heavy ML packages) - external Qdrant handles embeddings
-# - inngest (workflow orchestration) - not needed for simple API
-# - streamlit (web UI) - frontend is separate
-# - numpy (heavy numerical computing) - qdrant-client handles internally
-# - uvicorn (provided by Vercel runtime)
-# - aiohttp (if not needed for your use case)
+# Document processing
+llama-index-core>=0.10.0
+llama-index-readers-file>=0.1.0
+sentence-transformers>=2.2.2
+
+# Utilities
+python-dotenv>=1.2.1
+requests>=2.31.0
+inngest>=1.0.0
