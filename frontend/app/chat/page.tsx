@@ -126,29 +126,23 @@ export default function ChatPage() {
     setIsAnalyzing(true);
     
     try {
-      // Simulate processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Call the backend API for real analysis
+      const response = await fetch('/api/analyze-alignment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          job_description: jobContent,
+          question: alignmentQuestion.trim()
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to analyze job alignment');
+
       const analysisMessage: Message = {
         id: Date.now().toString(),
-        content: `**🎯 Job Alignment Analysis**
-
-${inputMethod === 'upload' ? `Based on the uploaded job description (${jobFile?.name}) and Anirudh's resume:` : 'Based on the provided job description and Anirudh\'s resume:'}
-
-**Match Score: 85%**
-
-**Key Strengths:**
-• Strong cloud experience (AWS, GCP)
-• Enterprise Java/Spring Boot development
-• Microservices architecture expertise
-• Full SDLC experience
-
-**Recommended Approach:**
-• Emphasize cloud migration projects
-• Highlight technical leadership experience
-• Showcase problem-solving capabilities
-
-Anirudh appears to be a strong fit for this role!`,
+        content: data.analysis || "I couldn't generate a proper analysis.",
         role: 'assistant',
         timestamp: new Date(),
         type: 'alignment'
@@ -162,6 +156,14 @@ Anirudh appears to be a strong fit for this role!`,
       
     } catch (error) {
       console.error('Analysis error:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "Sorry, having trouble analyzing the job alignment. Please try again.",
+        role: 'assistant',
+        timestamp: new Date(),
+        type: 'alignment'
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsAnalyzing(false);
     }
