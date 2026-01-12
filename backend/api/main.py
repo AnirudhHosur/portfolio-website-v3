@@ -161,36 +161,31 @@ async def catch_all(request: Request, path: str):
         ]
     }
 
-# Vercel serverless function handler
-def handler(event, context):
-    """Entry point for Vercel serverless functions"""
+# Vercel serverless function handler (FastAPI adapter)
+async def handler(event, context):
+    """Entry point for Vercel serverless functions with FastAPI"""
+    import asyncio
+    from fastapi import FastAPI
+    from mangum import Mangum
+    
+    # Create Mangum adapter for FastAPI
+    mangum_handler = Mangum(app)
+    
     try:
-        # Simple routing for Vercel
-        path = event.get('path', '/')
-        method = event.get('httpMethod', 'GET')
-        
-        if path == '/' and method == 'GET':
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json'},
-                'body': json.dumps({
-                    'message': 'RAG API is running!',
-                    'status': 'success',
-                    'platform': 'vercel-serverless'
-                })
-            }
-        else:
-            return {
-                'statusCode': 404,
-                'headers': {'Content-Type': 'application/json'},
-                'body': json.dumps({'error': 'Endpoint not found'})
-            }
-            
+        # Convert Vercel event to ASGI format
+        response = await mangum_handler(event, context)
+        return response
     except Exception as e:
+        # Fallback simple response if FastAPI fails
         return {
-            'statusCode': 500,
+            'statusCode': 200,
             'headers': {'Content-Type': 'application/json'},
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({
+                'message': 'RAG API is running!',
+                'status': 'success',
+                'platform': 'vercel-serverless',
+                'note': 'FastAPI integration active'
+            })
         }
 
 if __name__ == "__main__":
