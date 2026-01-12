@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9",
+        "includeFiles": ["**"]
+      }
     }
   ],
   "routes": [
@@ -13,9 +17,12 @@
     }
   ],
   "regions": ["iad1"],
+  "installCommand": "pip install -r requirements.txt",
+  "buildCommand": "",
+  "outputDirectory": ".",
   "env": {
-    "QDRANT_URL": "QDRANT_URL",
-    "QDRANT_API_KEY": "QDRANT_API_KEY",
-    "GEMINI_API_KEY": "GEMINI_API_KEY"
+    "QDRANT_URL": "@qdrant_url",
+    "QDRANT_API_KEY": "@qdrant_api_key",
+    "GEMINI_API_KEY": "@gemini_api_key"
   }
 }

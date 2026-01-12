@@ -1,6 +1,6 @@
 # Load PDF and create embeddings using lightweight libraries
 
-import PyPDF2
+from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
@@ -17,9 +17,9 @@ def load_and_chunk_pdf(path: str) -> list[str]:
     """Load PDF and split into chunks using PyPDF2"""
     texts = []
     
-    # Read PDF using PyPDF2
+    # Read PDF using pypdf
     with open(path, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
+        pdf_reader = PdfReader(file)
         for page in pdf_reader.pages:
             text = page.extract_text()
             if text.strip():  # Only add non-empty pages
