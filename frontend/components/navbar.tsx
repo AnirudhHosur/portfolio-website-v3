@@ -62,12 +62,14 @@ export function Navbar() {
               </Link>
             </Button>
             
-            {/* User profile placeholder */}
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
-                <span className="text-xs font-bold text-white">AH</span>
-              </div>
-              <span className="sr-only">User profile</span>
+            {/* Anirudh's Wall - Document Ingest Portal */}
+            <Button variant="ghost" size="icon" className="rounded-full" asChild>
+              <Link href="/anirudhs-wall">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                  <span className="text-xs font-bold text-white">AH</span>
+                </div>
+                <span className="sr-only">Anirudh's Wall - Document Ingest Portal</span>
+              </Link>
             </Button>
           </div>
         </div>
