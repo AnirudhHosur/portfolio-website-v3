@@ -106,6 +106,9 @@ async def query_pdf_endpoint(request: dict):
             "num_contexts": len(found["contexts"])
         }
     except Exception as e:
+        print(f"Detailed error in query endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
 
 

@@ -37,9 +37,9 @@ class QdrantStorage:
         )
 
     def search(self, query_vector, top_k: int = 5):
-        results = self.client.query_points(
+        results = self.client.search(
             collection_name=self.collection,
-            query=query_vector,
+            query_vector=query_vector,
             with_payload=True,
             limit=top_k,
         )
@@ -47,8 +47,7 @@ class QdrantStorage:
         contexts = []
         sources = set()
 
-        # Handle the response from query_points
-        for r in results.points:
+        for r in results:
             payload = r.payload or {}
             if "text" in payload:
                 contexts.append(payload["text"])
