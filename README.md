@@ -1,6 +1,6 @@
 # Production RAG Chatbot - Portfolio Website v3
 
-A production-ready Retrieval-Augmented Generation (RAG) chatbot integrated with a modern portfolio website, enabling visitors to interact with Anirudh's professional profile through AI-powered conversation.
+A production-ready Retrieval-Augmented Generation (RAG) chatbot integrated with a modern portfolio website, featuring secure document ingestion, advanced UI components, and AI-powered career interaction.
 
 ## 👨‍💻 About the Developer
 
@@ -24,21 +24,23 @@ Calgary, Alberta, Canada
 
 This repository contains a full-stack application featuring:
 
-1. **Modern Portfolio Website** (Next.js) - Showcases professional experience, skills, and projects
-2. **AI-Powered RAG Chatbot** - Allows visitors to ask questions about Anirudh's career profile
-3. **Job Alignment Analysis** - Enables recruiters to analyze candidate-job fit
-4. **PDF Document Interaction** - Process and query resume documents using vector search
+1. **Modern Portfolio Website** (Next.js 16) - Professional showcase with responsive design
+2. **AI-Powered RAG Chatbot** - Interactive career profile conversation
+3. **Job Alignment Analysis** - Candidate-job matching for recruiters
+4. **Secure Document Ingestion** - Protected PDF upload to Qdrant vector database
+5. **Advanced UI/UX** - Shadcn/ui components with dark/light theme support
 
 ### 🌟 Key Features
 
-- **Interactive Chat Interface**: Visitors can ask questions about professional background
-- **Job Description Analysis**: Upload/Paste job descriptions for candidate matching
-- **Dual-Panel Layout**: Separate sections for job analysis and general conversation
-- **PDF Processing**: Ingest and query resume documents with semantic search
-- **Dark/Light Theme**: Seamless theme switching with persistent preferences
-- **Responsive Design**: Mobile-first approach working across all devices
-- **Professional UI**: Built with shadcn/ui components and Tailwind CSS
-- **TypeScript Support**: Full type safety throughout the application
+- **👤 Professional Profile**: Personal introduction with profile picture
+- **💬 Interactive Chat Interface**: Ask questions about career and expertise
+- **🎯 Job Alignment Analysis**: AI-powered candidate-job matching
+- **📁 Secure Document Ingestion**: Password-protected PDF upload to Qdrant
+- **📱 Responsive Design**: Mobile-first approach with dark/light themes
+- **🎨 Modern UI**: Shadcn/ui components with smooth animations
+- **🔗 Dual-Panel Layout**: Separate sections for different functionalities
+- **🔐 Access Control**: 4-digit passcode protection for document ingestion
+- **⚡ Real-time Feedback**: Animated success notifications and loading states
 
 ## 🛠️ Tech Stack
 
@@ -51,17 +53,18 @@ This repository contains a full-stack application featuring:
 - **Pydantic**: Data validation and settings management
 
 ### Frontend
-- **Next.js 16**: React framework with App Router
+- **Next.js 16**: React framework with App Router and Image Optimization
 - **TypeScript**: Type-safe JavaScript development
-- **shadcn/ui**: Component library for consistent, accessible UI
-- **Tailwind CSS**: Utility-first CSS framework
-- **Framer Motion**: Animation library for smooth transitions
-- **next-themes**: Theme switching library
+- **shadcn/ui**: Component library with Radix UI primitives
+- **Tailwind CSS**: Utility-first CSS framework with dark mode support
+- **Framer Motion**: Animation library for interactive UI elements
+- **next-themes**: Automatic theme switching with system preference
 
 ### Infrastructure
-- **Vercel**: Deployment and hosting platform
-- **Qdrant Cloud**: Managed vector database service
-- **Google AI Studio**: Gemini API access
+- **Vercel**: Frontend deployment and hosting
+- **Railway**: Backend deployment (FastAPI)
+- **Qdrant Cloud**: Managed vector database for semantic search
+- **Google AI Studio**: Gemini 2.5 Flash API for AI responses
 
 ## 🚀 Quick Start
 
@@ -160,14 +163,17 @@ Recruiters can:
 ## 🔧 API Endpoints
 
 ### Backend Routes
-- `POST /ingest` - Process and store PDF documents
-- `POST /query` - Query documents with RAG
-- `POST /analyze_alignment` - Job-candidate matching analysis
+- `POST /ingest` - Secure PDF document processing and storage
+- `POST /query` - RAG-powered document and profile queries
+- `POST /analyze_alignment` - Job description and candidate matching
 
 ### Frontend Routes
-- `GET /` - Portfolio homepage
-- `GET /chat` - Interactive chat interface
-- `POST /api/chat` - Proxy for backend queries
+- `GET /` - Portfolio homepage with profile picture
+- `GET /chat` - Dual-panel chat interface
+- `GET /anirudhs-wall` - Secure document ingestion portal
+- `POST /api/chat` - Chat proxy to backend
+- `POST /api/ingest` - Document upload proxy
+- `POST /api/analyze-alignment` - Job analysis proxy
 
 ## 🎨 UI Components
 
@@ -180,15 +186,35 @@ The interface uses shadcn/ui components for consistency:
 
 ## 🌐 Deployment
 
-### Vercel Deployment (Frontend)
-1. Connect GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on pushes to main branch
+### Live Demo
+- **Frontend**: [anirudhhosur.vercel.app](https://anirudhhosur.vercel.app)
+- **Backend**: [portfolio-website-v3-production.up.railway.app](https://portfolio-website-v3-production.up.railway.app)
 
-### Backend Deployment Options
-- **Railway**: One-click deployment with environment management
-- **Render**: Simple deployment with free tier support
-- **Self-hosted**: Using Docker with reverse proxy
+### Vercel Deployment (Frontend)
+**Environment Variables:**
+```
+BACKEND_URL=https://portfolio-website-v3-production.up.railway.app
+NEXT_PUBLIC_BACKEND_URL=https://portfolio-website-v3-production.up.railway.app
+```
+
+**Configuration:**
+- Framework: Next.js
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Install Command: `npm install`
+
+### Railway Deployment (Backend)
+**Environment Variables:**
+```
+QDRANT_URL=your-qdrant-cloud-url
+QDRANT_API_KEY=your-qdrant-api-key
+GEMINI_API_KEY=your-google-gemini-api-key
+```
+
+**Configuration:**
+- Runtime: Python 3.12
+- Entry Point: `main.py`
+- Port: `$PORT` (Railway auto-assigned)
 
 ## 📊 Performance
 
@@ -225,6 +251,18 @@ For issues or questions:
 - Check the documentation
 - Review FastAPI and Qdrant documentation
 
+## 🚀 Recent Enhancements
+
+✅ **Completed Features:**
+- [x] Professional profile picture integration
+- [x] Secure document ingestion with passcode protection
+- [x] Enhanced UI with shadcn/ui components
+- [x] Animated success notifications
+- [x] Back navigation buttons
+- [x] Responsive design improvements
+- [x] Dark/light theme support
+- [x] Password-protected Anirudh's Wall page
+
 ## 🚀 Future Enhancements
 
 Planned improvements:
@@ -235,6 +273,22 @@ Planned improvements:
 - [ ] Voice interaction capabilities
 - [ ] Mobile app version
 
+## 📊 System Architecture
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│   Next.js 16    │────│   FastAPI        │────│   Qdrant Cloud   │
+│   Frontend      │    │   Backend        │    │   Vector DB      │
+│   (Vercel)      │    │   (Railway)      │    │                  │
+└─────────────────┘    └──────────────────┘    └──────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│   shadcn/ui     │    │   Gemini 2.5     │    │   PDF Documents  │
+│   Components    │    │   Flash API      │    │   & Embeddings   │
+└─────────────────┘    └──────────────────┘    └──────────────────┘
+```
+
 ---
 
-Built with ❤️ using Python, FastAPI, Next.js, Qdrant, and Google Gemini
+Built with ❤️ using Python, FastAPI, Next.js 16, Qdrant, and Google Gemini 2.5 Flash
