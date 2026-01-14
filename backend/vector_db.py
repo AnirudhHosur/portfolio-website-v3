@@ -5,7 +5,7 @@ import os
 
 load_dotenv()
 
-EMBED_DIM = 384  # MUST match embedding model
+EMBED_DIM = 768  # MUST match embedding model
 
 
 class QdrantStorage:

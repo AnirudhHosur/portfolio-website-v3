@@ -1,54 +1,59 @@
-# Load PDF and create embeddings using lightweight libraries
-
+import os
 from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
+import google.generativeai as genai
 
 load_dotenv()
 
-EMBED_MODEL = "all-MiniLM-L6-v2"
-EMBED_DIM = 384  # MUST match Qdrant collection dim
+# Configure Gemini once
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-embed_model = SentenceTransformer(EMBED_MODEL)
-
+EMBED_MODEL = "models/text-embedding-004"
+EMBED_DIM = 768  # Gemini embedding dimension
 
 
 def load_and_chunk_pdf(path: str) -> list[str]:
-    """Load PDF and split into chunks using PyPDF2"""
+    """Load PDF and split into ~1000 char chunks"""
     texts = []
-    
-    # Read PDF using pypdf
-    with open(path, 'rb') as file:
-        pdf_reader = PdfReader(file)
-        for page in pdf_reader.pages:
+
+    with open(path, "rb") as file:
+        reader = PdfReader(file)
+        for page in reader.pages:
             text = page.extract_text()
-            if text.strip():  # Only add non-empty pages
-                texts.append(text)
-    
-    # Simple chunking - split by sentences or fixed size
+            if text and text.strip():
+                texts.append(text.strip())
+
     chunks = []
     for text in texts:
-        # Split into chunks of approximately 1000 characters
         words = text.split()
         current_chunk = []
         current_length = 0
-        
+
         for word in words:
-            if current_length + len(word) + 1 > 1000 and current_chunk:
-                # Save current chunk
-                chunks.append(' '.join(current_chunk))
+            if current_length + len(word) + 1 > 1000:
+                chunks.append(" ".join(current_chunk))
                 current_chunk = [word]
                 current_length = len(word)
             else:
                 current_chunk.append(word)
                 current_length += len(word) + 1
-        
-        # Don't forget the last chunk
+
         if current_chunk:
-            chunks.append(' '.join(current_chunk))
-    
+            chunks.append(" ".join(current_chunk))
+
     return chunks
 
+
 def embed_texts(texts: list[str]) -> list[list[float]]:
-    embeddings = embed_model.encode(texts)
-    return embeddings.tolist()
+    """Generate embeddings using Gemini"""
+    embeddings = []
+
+    for text in texts:
+        result = genai.embed_content(
+            model=EMBED_MODEL,
+            content=text,
+            task_type="retrieval_document",
+        )
+        embeddings.append(result["embedding"])
+
+    return embeddings
