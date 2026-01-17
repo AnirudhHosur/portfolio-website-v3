@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedSection } from "@/components/animated-section";
@@ -51,7 +52,7 @@ export function HeroSection() {
               <a href="#contact">Get in Touch</a>
             </Button>
             <Button variant="outline" size="lg" className="px-8 py-3 text-lg border-2" asChild>
-              <a href="#projects">View Projects</a>
+              <Link href="/projects">View Projects</Link>
             </Button>
           </div>
         </div>

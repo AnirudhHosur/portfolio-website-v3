@@ -3,9 +3,9 @@
 import { Navbar } from "@/components/navbar";
 import { HeroSection } from "@/components/hero";
 import { AboutSection } from "@/components/about";
-import { ExperienceSection } from "@/components/experience";
+import { ExperienceTimeline } from "@/components/experience-timeline";
 import { SkillsSection } from "@/components/skills";
-import { ProjectsSection } from "@/components/projects";
+import { ProjectsSection } from "@/components/projects-display";
 import { ContactSection } from "@/components/contact";
 import { ScrollToTop } from "@/components/scroll-to-top";
 
@@ -16,7 +16,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
-        <ExperienceSection />
+        <ExperienceTimeline />
         <SkillsSection />
         <ProjectsSection />
         <ContactSection />
