@@ -15,7 +15,7 @@ export const experienceData: ExperienceItem[] = [
     id: 'ibm',
     company: 'IBM Canada',
     position: 'Software Developer',
-    period: 'Jun 2024 - Present · 7 mos',
+    period: 'Oct 2024 - Present',
     location: 'Calgary, Alberta, Canada',
     description: [
       'Working on enterprise software solutions using modern cloud technologies',
@@ -28,8 +28,8 @@ export const experienceData: ExperienceItem[] = [
   {
     id: 'red-deer-polytechnic',
     company: 'Red Deer Polytechnic',
-    position: 'Teaching Assistant',
-    period: 'Sep 2023 - Apr 2024 · 8 mos',
+    position: 'Computer Programming Instructor',
+    period: 'Jan 2024 - Oct 2024 · 10 mos',
     location: 'Red Deer, Alberta, Canada',
     description: [
       'Assisted in computer science courses and laboratory sessions',
@@ -43,7 +43,7 @@ export const experienceData: ExperienceItem[] = [
     id: 'credwise',
     company: 'Credwise',
     position: 'Software Engineer',
-    period: 'Mar 2023 - Aug 2023 · 6 mos',
+    period: 'Jul 2024 - Oct 2024 · 4 mos',
     location: 'Remote',
     description: [
       'Developed financial technology solutions for credit assessment',
