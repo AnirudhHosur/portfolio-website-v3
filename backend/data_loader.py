@@ -6,7 +6,11 @@ import google.generativeai as genai
 load_dotenv()
 
 # Configure Gemini once
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    print("Warning: GEMINI_API_KEY environment variable is not set")
+else:
+    genai.configure(api_key=api_key)
 
 EMBED_MODEL = "models/text-embedding-004"
 EMBED_DIM = 768  # Gemini embedding dimension

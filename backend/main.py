@@ -17,7 +17,11 @@ app = FastAPI()
 
 
 # Initialize storage
-storage = QdrantStorage(client=qdrant_client)
+try:
+    storage = QdrantStorage(client=qdrant_client)
+except ValueError as e:
+    print(f"Storage initialization error: {e}")
+    storage = None
 
 
 
@@ -25,6 +29,9 @@ storage = QdrantStorage(client=qdrant_client)
 @app.post("/ingest")
 async def ingest_pdf_endpoint(file: UploadFile = File(...), source_id: str = Form(...)):
     """Direct endpoint for PDF ingestion without Inngest"""    
+    if storage is None:
+        raise HTTPException(status_code=503, detail="Storage is not available. Check environment variables.")
+    
     # Save uploaded file
     uploads_dir = Path("uploads")
     uploads_dir.mkdir(parents=True, exist_ok=True)
@@ -72,6 +79,9 @@ async def ingest_pdf_endpoint(file: UploadFile = File(...), source_id: str = For
 @app.post("/query")
 async def query_pdf_endpoint(request: dict):
     """Direct endpoint for RAG queries without Inngest"""
+    if storage is None:
+        raise HTTPException(status_code=503, detail="Storage is not available. Check environment variables.")
+    
     try:
         question = request.get("question")
         top_k = int(request.get("top_k", 5))
@@ -95,7 +105,11 @@ async def query_pdf_endpoint(request: dict):
         )
         
         # Get response from Gemini
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="GEMINI_API_KEY environment variable is not set")
+        
+        genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(user_content)
         answer = response.text
@@ -115,6 +129,9 @@ async def query_pdf_endpoint(request: dict):
 @app.post("/analyze_alignment")
 async def analyze_job_alignment(request: dict):
     """Analyze job description alignment with candidate resume"""
+    if storage is None:
+        raise HTTPException(status_code=503, detail="Storage is not available. Check environment variables.")
+    
     try:
         job_description = request.get("job_description")
         question = request.get("question")
@@ -151,7 +168,11 @@ async def analyze_job_alignment(request: dict):
         Respond in a structured format with clear sections.
         """
         
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="GEMINI_API_KEY environment variable is not set")
+        
+        genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(analysis_prompt)
         analysis_result = response.text

@@ -9,18 +9,25 @@ EMBED_DIM = 768  # MUST match embedding model
 
 
 class QdrantStorage:
-    def __init__(self, client: QdrantClient, collection: str = "docs"):
+    def __init__(self, client: QdrantClient = None, collection: str = "docs"):
         self.client = client
         self.collection = collection
-
-        if not self.client.collection_exists(self.collection):
-            self.client.create_collection(
-                collection_name=self.collection,
-                vectors_config=VectorParams(
-                    size=EMBED_DIM,
-                    distance=Distance.COSINE,
-                ),
-            )
+        
+        if self.client is None:
+            raise ValueError("Qdrant client is not initialized. Check your QDRANT_URL and QDRANT_API_KEY environment variables.")
+        
+        try:
+            if not self.client.collection_exists(self.collection):
+                self.client.create_collection(
+                    collection_name=self.collection,
+                    vectors_config=VectorParams(
+                        size=EMBED_DIM,
+                        distance=Distance.COSINE,
+                    ),
+                )
+        except Exception as e:
+            print(f"Warning: Could not initialize collection: {e}")
+            raise
 
     def upsert(self, ids, vectors, payloads):
         points = [
@@ -60,9 +67,13 @@ class QdrantStorage:
 
 
 # Global client instance
-qdrant_client = QdrantClient(
-    url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY"),
-)
-
-print(qdrant_client.get_collections())
+try:
+    qdrant_client = QdrantClient(
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
+    )
+    # Only try to connect to verify the connection if needed, but don't crash on startup
+    # collections = qdrant_client.get_collections()
+except Exception as e:
+    print(f"Warning: Could not initialize Qdrant client: {e}")
+    qdrant_client = None
