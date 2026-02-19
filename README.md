@@ -220,9 +220,12 @@ GEMINI_API_KEY=your-google-gemini-api-key
 
 ### Typical Response Times
 - **PDF Processing**: 2-5 seconds per document
-- **Chat Responses**: 1-3 seconds
-- **Job Analysis**: 2-4 seconds
+- **Chat Responses**: 1-3 seconds (up to 50 seconds on free tier due to cold starts)
+- **Job Analysis**: 2-4 seconds (up to 50 seconds on free tier due to cold starts)
 - **Vector Search**: <100ms
+
+### Free Tier Limitations
+⚠️ **Heads up!** Responses may take 20-50 seconds due to cold starts on the free tier. This happens because deploying ML workloads is expensive, and I'm using Render's free tier. Thanks for your patience! 🙏
 
 ### Scalability Features
 - Vector database for efficient similarity search

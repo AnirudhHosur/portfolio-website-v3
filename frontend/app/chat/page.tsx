@@ -292,6 +292,7 @@ export default function ChatPage() {
                       (inputMethod === 'upload' ? !jobFile : !jobText.trim())
                     }
                     className="w-full gap-2"
+                    title="Analyze job fit (may take up to 50s due to free tier limitations)"
                   >
                     {isAnalyzing ? (
                       <>
@@ -379,7 +380,11 @@ export default function ChatPage() {
                           <Bot className="h-4 w-4" />
                         </div>
                         <div className="rounded-2xl bg-secondary px-4 py-3">
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <div className="flex flex-col gap-1">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span className="text-xs text-muted-foreground mt-1">Processing your request...</span>
+                            <span className="text-xs text-muted-foreground">(May take up to 50s due to free tier limitations)</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -407,6 +412,7 @@ export default function ChatPage() {
                     size="icon"
                     disabled={isLoading || !inputValue.trim()}
                     className="self-end h-12 w-12"
+                    title="Sending message (may take up to 50s due to free tier limitations)"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -420,8 +426,15 @@ export default function ChatPage() {
           </div>
         </div>
 
-        <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Powered by Anirudh's resume knowledge base</p>
+        <div className="mt-8 text-center text-sm">
+          <p className="text-muted-foreground">Powered by Anirudh's resume knowledge base</p>
+          <div className="mt-2 p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg max-w-2xl mx-auto">
+            <p className="text-xs text-yellow-700 dark:text-yellow-300">
+              ⚠️ Heads up! Responses may take 20-50 seconds due to cold starts on the free tier. 
+              This happens because deploying ML workloads is expensive, and I'm using Render's free tier. 
+              Thanks for your patience! 🙏
+            </p>
+          </div>
         </div>
       </main>
     </div>

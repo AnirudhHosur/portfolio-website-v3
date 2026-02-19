@@ -75,14 +75,13 @@ class QdrantStorage:
         }
 
 
-# Global client instance
+# Global client instance - initialize without making API calls during import
 try:
     qdrant_client = QdrantClient(
         url=os.getenv("QDRANT_URL"),
         api_key=os.getenv("QDRANT_API_KEY"),
     )
-    # Only try to connect to verify the connection if needed, but don't crash on startup
-    # collections = qdrant_client.get_collections()
+    # Do not make any API calls during import time to avoid startup failures
 except Exception as e:
     print(f"Warning: Could not initialize Qdrant client: {e}")
     qdrant_client = None
