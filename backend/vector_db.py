@@ -12,9 +12,15 @@ class QdrantStorage:
     def __init__(self, client: QdrantClient = None, collection: str = "docs"):
         self.client = client
         self.collection = collection
+        self._collection_initialized = False
         
         if self.client is None:
             raise ValueError("Qdrant client is not initialized. Check your QDRANT_URL and QDRANT_API_KEY environment variables.")
+    
+    def _ensure_collection_exists(self):
+        """Ensure the collection exists, creating it if necessary."""
+        if self._collection_initialized:
+            return
         
         try:
             if not self.client.collection_exists(self.collection):
@@ -25,11 +31,13 @@ class QdrantStorage:
                         distance=Distance.COSINE,
                     ),
                 )
+            self._collection_initialized = True
         except Exception as e:
             print(f"Warning: Could not initialize collection: {e}")
             raise
 
     def upsert(self, ids, vectors, payloads):
+        self._ensure_collection_exists()
         points = [
             PointStruct(
                 id=ids[i],
@@ -44,6 +52,7 @@ class QdrantStorage:
         )
 
     def search(self, query_vector, top_k: int = 5):
+        self._ensure_collection_exists()
         results = self.client.search(
             collection_name=self.collection,
             query_vector=query_vector,

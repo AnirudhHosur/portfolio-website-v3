@@ -22,6 +22,9 @@ try:
 except ValueError as e:
     print(f"Storage initialization error: {e}")
     storage = None
+except Exception as e:
+    print(f"Unexpected error initializing storage: {e}")
+    storage = None
 
 
 
