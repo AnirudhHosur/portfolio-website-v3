@@ -5,7 +5,7 @@ import os
 
 load_dotenv()
 
-EMBED_DIM = 768  # MUST match embedding model
+EMBED_DIM = 3072  # MUST match embedding model
 
 
 class QdrantStorage:
@@ -18,12 +18,15 @@ class QdrantStorage:
             raise ValueError("Qdrant client is not initialized. Check your QDRANT_URL and QDRANT_API_KEY environment variables.")
     
     def _ensure_collection_exists(self):
-        """Ensure the collection exists, creating it if necessary."""
         if self._collection_initialized:
             return
-        
+    
+        print("QDRANT URL:", os.getenv("QDRANT_URL"))
+        print("COLLECTION EXISTS?:", self.client.collection_exists(self.collection))
+
         try:
             if not self.client.collection_exists(self.collection):
+                print("Creating collection with dim:", EMBED_DIM)
                 self.client.create_collection(
                     collection_name=self.collection,
                     vectors_config=VectorParams(
@@ -31,7 +34,11 @@ class QdrantStorage:
                         distance=Distance.COSINE,
                     ),
                 )
+            else:
+                print("Collection already exists — NOT creating")
+
             self._collection_initialized = True
+
         except Exception as e:
             print(f"Warning: Could not initialize collection: {e}")
             raise

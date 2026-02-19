@@ -12,8 +12,8 @@ if not api_key:
 else:
     genai.configure(api_key=api_key)
 
-EMBED_MODEL = "models/text-embedding-004"
-EMBED_DIM = 768  # Gemini embedding dimension
+EMBED_MODEL = "models/gemini-embedding-001"
+EMBED_DIM = 3072  # Gemini embedding dimension
 
 
 def load_and_chunk_pdf(path: str) -> list[str]:
@@ -53,11 +53,14 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     embeddings = []
 
     for text in texts:
-        result = genai.embed_content(
-            model=EMBED_MODEL,
-            content=text,
-            task_type="retrieval_document",
-        )
-        embeddings.append(result["embedding"])
+        try:
+            result = genai.embed_content(
+                model=EMBED_MODEL,
+                content=text
+            )
+            embeddings.append(result["embedding"])
+        except Exception as e:
+            print(f"Embedding error: {e}")
+            raise
 
     return embeddings
